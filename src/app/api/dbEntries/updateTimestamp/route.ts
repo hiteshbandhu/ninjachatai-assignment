@@ -1,4 +1,4 @@
-import { updateFileTimestamp } from '@/utils/db/dbUtils'; // adjust the import path as needed
+import { updateFileTimestamp } from '@/utils/db/dbUtils'; 
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request): Promise<NextResponse> {

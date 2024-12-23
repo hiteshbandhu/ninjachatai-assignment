@@ -13,6 +13,7 @@ export async function initializeDatabase() {
         CREATE TABLE IF NOT EXISTS "FILE_TRACKER" (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
             filename TEXT NOT NULL,
             namespace TEXT NOT NULL
         )
@@ -22,13 +23,14 @@ export async function initializeDatabase() {
     return db;
 }
 
-export async function insertFileTrackerEntry(filename, namespace) {
+export async function insertFileTrackerEntry(filename: string, namespace: string) {
     const db = await initializeDatabase();
     const createdAt = new Date().toISOString();
+    const updatedAt = createdAt; // Set updated_at to the same value as created_at initially
 
     await db.run(`
-        INSERT INTO "FILE_TRACKER" (created_at, filename, namespace) 
-        VALUES (?, ?, ?)`, [createdAt, filename, namespace]);
+        INSERT INTO "FILE_TRACKER" (created_at, updated_at, filename, namespace) 
+        VALUES (?, ?, ?, ?)`, [createdAt, updatedAt, filename, namespace]);
 
     console.log(`Entry added: ${filename}, Namespace: ${namespace}`);
 }
@@ -37,7 +39,7 @@ export async function getFileTrackerEntries() {
     const db = await initializeDatabase();
     try {
         const entries = await db.all(`
-            SELECT filename as name, created_at, namespace 
+            SELECT filename, created_at, updated_at, namespace 
             FROM "FILE_TRACKER"
             ORDER BY created_at DESC
         `);
@@ -48,16 +50,21 @@ export async function getFileTrackerEntries() {
     }
 }
 
-export async function updateFileTimestamp(filename) {
+export async function updateFileTimestamp(filename: string): Promise<boolean> {
     const db = await initializeDatabase();
     const newTimestamp = new Date().toISOString();
 
     try {
-        await db.run(`
+        const result = await db.run(`
             UPDATE "FILE_TRACKER" 
-            SET created_at = ? 
+            SET created_at = ?
             WHERE filename = ?
         `, [newTimestamp, filename]);
+
+        if (result.changes === 0) {
+            console.log(`No entry found for file: ${filename}`);
+            return false; // No rows were updated
+        }
 
         console.log(`Timestamp updated for file: ${filename}`);
         return true;

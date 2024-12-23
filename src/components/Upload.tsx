@@ -1,8 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import { Upload as UploadIcon, FileText, Clock } from 'lucide-react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { Upload as UploadIcon, FileText, Clock, Plus, MessageSquare } from 'lucide-react';
 
 const Upload = () => {
   const [progress, setProgress] = useState<number | null>(null);
@@ -139,109 +139,153 @@ const Upload = () => {
   };
 
   return (
-    <main className='flex flex-col items-center justify-center min-h-screen p-4'>
-      <div className='w-full max-w-4xl'>
-        <div className='mb-8 text-center'>
-          <label className='flex flex-col items-center cursor-pointer'>
-            <UploadIcon className='w-12 h-12 mb-2' />
-            <input 
-              type="file" 
-              accept="application/pdf" 
-              onChange={handleFileSelection} 
-              className='hidden' 
-            />
-            <span className='text-lg'>Upload PDF file</span>
-          </label>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+          <h1 className="text-2xl font-bold text-gray-900">Document Chat</h1>
         </div>
+      </header>
 
-        {progress !== null && (
-          <div className='mt-4 w-64 mx-auto'>
-            <div className='w-full bg-gray-200 rounded-full h-2.5'>
-              <div 
-                className='bg-blue-600 h-2.5 rounded-full' 
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-            <span className='mt-1 text-sm text-gray-600'>{progress.toFixed(0)}%</span>
-          </div>
-        )}
-        
-        {responseMessage && (
-          <div className='mt-4 text-center text-gray-700'>
-            <span>{responseMessage}</span>
-          </div>
-        )}
-
-        <div className='mt-8'>
-          <h2 className='text-xl font-semibold mb-4'>Your Files</h2>
-          <div className='bg-white rounded-lg shadow'>
-            {existingFiles.length > 0 ? (
-              <div className='divide-y'>
-                {existingFiles.map((file, index) => (
-                  <div 
-                    key={index} 
-                    className={`p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer ${
-                      selectedFile === file.filename ? 'bg-blue-50' : ''
-                    }`}
-                    onClick={() => setSelectedFile(file.filename)}
-                  >
-                    <div className='flex items-center space-x-3'>
-                      <FileText className='w-5 h-5 text-gray-500' />
-                      <div>
-                        <p className='font-medium'>{file.filename}</p>
-                        <p className='text-sm text-gray-500 flex items-center'>
-                          <Clock className='w-4 h-4 mr-1' />
-                          {formatDate(file.created_at)}
-                        </p>
-                      </div>
-                    </div>
-                    {selectedFile === file.filename && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateTimestampAndChat(file.filename);
-                        }}
-                        className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
-                      >
-                        Chat
-                      </button>
-                    )}
+      <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Upload Section */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="text-center">
+              <label className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
+                <div className="space-y-2">
+                  <div className="text-blue-500">
+                    <Plus className="mx-auto h-12 w-12" />
                   </div>
-                ))}
+                  <div className="text-sm text-gray-600">
+                    <span className="font-medium text-blue-500">Upload a PDF file</span> or drag and drop
+                  </div>
+                  <p className="text-xs text-gray-500">PDF up to 10MB</p>
+                </div>
+                <input 
+                  type="file" 
+                  accept="application/pdf" 
+                  onChange={handleFileSelection} 
+                  className="hidden" 
+                />
+              </label>
+            </div>
+
+            {progress !== null && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between text-sm text-gray-600 mb-1">
+                  <span>Uploading...</span>
+                  <span>{progress.toFixed(0)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
               </div>
-            ) : (
-              <div className='p-4 text-center text-gray-500'>
-                No files uploaded yet
+            )}
+
+            {responseMessage && (
+              <div className="mt-4 p-4 rounded-lg bg-blue-50 text-blue-700 text-sm">
+                {responseMessage}
               </div>
             )}
           </div>
-        </div>
-      </div>
 
+          {/* Files List Section */}
+          <div className="bg-white rounded-lg shadow divide-y divide-gray-200">
+            <div className="p-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Your Documents</h2>
+              <div className="space-y-2">
+                {existingFiles.length > 0 ? (
+                  existingFiles.map((file, index) => (
+                    <div 
+                      key={index}
+                      className={`group relative p-4 rounded-lg transition-all ${
+                        selectedFile === file.filename 
+                          ? 'bg-blue-50 ring-2 ring-blue-500' 
+                          : 'hover:bg-gray-50'
+                      }`}
+                      onClick={() => setSelectedFile(file.filename)}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start space-x-3">
+                          <div className="flex-shrink-0">
+                            <FileText className={`w-6 h-6 ${
+                              selectedFile === file.filename ? 'text-blue-500' : 'text-gray-400'
+                            }`} />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-medium text-gray-900 truncate max-w-xs">
+                              {file.filename}
+                            </h3>
+                            <p className="mt-1 text-xs text-gray-500 flex items-center">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {formatDate(file.created_at)}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateTimestampAndChat(file.filename);
+                          }}
+                          className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md ${
+                            selectedFile === file.filename
+                              ? 'bg-blue-500 text-white hover:bg-blue-600'
+                              : 'text-gray-400 hover:text-blue-500'
+                          } transition-colors`}
+                        >
+                          <MessageSquare className="w-4 h-4 mr-1" />
+                          Chat
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12">
+                    <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                    <h3 className="mt-2 text-sm font-medium text-gray-900">No documents</h3>
+                    <p className="mt-1 text-sm text-gray-500">Upload a PDF to get started</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* File Exists Dialog */}
       {showDialog && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-          <div className='bg-white rounded-lg p-6 max-w-sm mx-4'>
-            <h3 className='text-lg font-semibold mb-4'>File Already Exists</h3>
-            <p className='mb-6'>Would you like to chat with the existing file?</p>
-            <div className='flex justify-end space-x-4'>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">File Already Exists</h3>
+              <p className="mt-2 text-sm text-gray-500">
+                This document is already in your library. What would you like to do?
+              </p>
+            </div>
+            <div className="flex justify-end space-x-4">
               <button 
                 onClick={() => handleExistingFile(true)}
-                className='px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors'
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Yes, Go to Chat
+                Chat with Existing
               </button>
               <button 
                 onClick={() => handleExistingFile(false)}
-                className='px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors'
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                No, Upload New File
+                Upload New Copy
               </button>
             </div>
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 };
+
 
 export default Upload;
