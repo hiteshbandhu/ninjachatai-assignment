@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Document Chat Application
 
-## Getting Started
+A Next.js application that allows users to upload PDF documents, manage them, and engage in AI-powered conversations about their content.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- PDF file upload with drag-and-drop support
+- Document management system
+- Real-time chat interface with AI
+- Document embedding and indexing
+- SQLite database for file tracking
+- Pinecone vector database integration
+- Markdown rendering in chat
+- Responsive design
+
+## Tech Stack
+
+- **Frontend**: Next.js, React, TailwindCSS
+- **Backend**: Next.js API Routes
+- **Database**: SQLite (file tracking), Pinecone (vector database)
+- **AI**: OpenAI GPT-4, LangChain, Vercel AI SDK
+- **File Processing**: PDF parsing and chunking
+- **Styling**: TailwindCSS, Lucide Icons
+
+## Prerequisites
+
+- Node.js (v14 or later)
+- pnpm or npm
+- OpenAI API key
+- Pinecone API key and index
+
+## Environment Variables
+
+Create a `.env.local` file in the root directory with:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX=your_pinecone_index
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/document-chat.git
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+```bash
+pnpm install
+# or
+npm install
+```
 
-## Learn More
+3. Run the development server:
+```bash
+pnpm run dev
+# or
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                 # Next.js app directory
+│   ├── api/            # API routes
+│   ├── chat/           # Chat interface
+│   └── page.tsx        # Home page
+├── components/         # React components
+├── utils/             # Utility functions
+│   ├── db/            # Database utilities
+│   └── pinecone/      # Pinecone integration
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Key Features
 
-## Deploy on Vercel
+### Document Upload
+- Supports PDF files
+- Progress tracking
+- Duplicate file detection
+- File size limit enforcement
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Document Management
+- List view of uploaded documents
+- Last accessed timestamps
+- Quick access to chat interface
+- File organization
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Chat Interface
+- Real-time AI responses
+- Markdown rendering
+- Tool integration
+- Context-aware responses
+
+## API Endpoints
+
+- `POST /api/fileHandler/saveToServer` - Upload files
+- `POST /api/fileHandler/embedFilesAndIndex` - Process and index files
+- `GET /api/dbEntries/fetch` - Get file list
+- `POST /api/dbEntries/updateTimestamp` - Update file access time
+- `POST /api/chat` - Handle chat interactions
+- Use the `text-embedding-3-small` model for embeddings in the pinecone index
+
+## File Tracker Database Schema
+
+```sql
+CREATE TABLE "FILE_TRACKER" (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    filename TEXT NOT NULL,
+    namespace TEXT NOT NULL
+)
+```
