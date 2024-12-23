@@ -43,7 +43,7 @@ PINECONE_INDEX=your_pinecone_index
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/document-chat.git
+git clone https://github.com/hiteshbandhu/ninjachatai-assignment.git
 ```
 
 2. Install dependencies:
